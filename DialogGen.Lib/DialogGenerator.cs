@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using DialogGen.Lib.Model;
+using DialogGen.Lib.Services;
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Schema;
 using Newtonsoft.Json;
@@ -104,7 +105,11 @@ namespace DialogGen.Lib
                 {
                     try
                     {
-                        // TODO
+                        var userInput = turnContext.Activity.Text;
+
+                        QnaResponse qnaResponse = await QnaMakerService.GetQnaResultAsync(userInput);
+
+                        await DialogMessageHandler.SendQnaMessageAsync(turnContext, cancellationToken, qnaResponse);
                     }
                     catch (System.Exception e)
                     {
