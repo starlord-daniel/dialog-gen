@@ -51,7 +51,7 @@ public static class DialogMessageHandler
 
         foreach (var optionText in optionCollection)
         {
-            optionActions.Add(new CardAction(ActionTypes.ImBack, title: optionText, value: optionText));
+            optionActions.Add(new CardAction(Microsoft.Bot.Schema.ActionTypes.ImBack, title: optionText, value: optionText));
         }
 
         return optionActions;
