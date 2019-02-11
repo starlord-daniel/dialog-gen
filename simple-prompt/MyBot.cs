@@ -9,7 +9,7 @@ using System;
 using Microsoft.Extensions.Options;
 using Microsoft.Bot.Builder.Integration;
 using System.Collections.Generic;
-using dialog_gen_lib;
+using DialogGen.Lib;
 using System.IO;
 
 namespace bot_cs

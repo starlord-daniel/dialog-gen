@@ -1,11 +1,11 @@
 using Newtonsoft.Json;
 
-namespace dialog_gen_lib.model
+namespace DialogGen.Lib.Model
 {
     public partial class DialogModel
     {
         [JsonProperty("initMessage")]
-        public InitMessage InitMessage { get; set; }
+        public Message InitMessage { get; set; }
 
         [JsonProperty("actions")]
         public Action[] Actions { get; set; }
@@ -14,7 +14,7 @@ namespace dialog_gen_lib.model
         public Message[] Messages { get; set; }
 
         [JsonProperty("defaultMessage")]
-        public DefaultMessage DefaultMessage { get; set; }
+        public Message DefaultMessage { get; set; }
     }
 
     public partial class Action
@@ -35,21 +35,6 @@ namespace dialog_gen_lib.model
         public string MessageId { get; set; }
     }
 
-    public partial class DefaultMessage
-    {
-        [JsonProperty("text")]
-        public string Text { get; set; }
-    }
-
-    public partial class InitMessage
-    {
-        [JsonProperty("text")]
-        public string Text { get; set; }
-
-        [JsonProperty("options")]
-        public string[] Options { get; set; }
-    }
-
     public partial class Message
     {
         [JsonProperty("id")]
@@ -57,5 +42,8 @@ namespace dialog_gen_lib.model
 
         [JsonProperty("text")]
         public string Text { get; set; }
+
+        [JsonProperty("options")]
+        public string[] Options { get; set; }
     }
 }

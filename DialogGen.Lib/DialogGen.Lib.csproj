@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>netcoreapp2.1</TargetFramework>
-    <RootNamespace>dialog_gen_lib</RootNamespace>
+    <RootNamespace>DialogGen.Lib</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>

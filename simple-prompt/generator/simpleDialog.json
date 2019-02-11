@@ -1,5 +1,6 @@
 {
     "initMessage": {
+        "id": "initMessage",
         "text": "Hello, I'm a simple prompt bot to showcase the dialog generator library ;-)",
         "options": [
             "Welcome",
@@ -15,7 +16,7 @@
                     "messageId": "welcomeMessage1"
                 },
                 {
-                    "type": "sendMessage",
+                    "type": "sendInitMessage",
                     "messageId": "initMessage"
                 }
             ]
@@ -28,7 +29,7 @@
                     "messageId": "byeMessage1"
                 },
                 {
-                    "type": "sendMessage",
+                    "type": "sendInitMessage",
                     "messageId": "initMessage"
                 }
             ]
@@ -41,10 +42,14 @@
         },
         {
             "id": "byeMessage1",
-            "text": "Goodbye! I hope to read from you soon."
+            "text": "Goodbye! I hope to read from you soon.",
+            "options": [
+                "Bye again!"
+            ]
         }
     ],
     "defaultMessage": {
+        "id": "defaultMessage",
         "text": "Sorry, but I'm just a humble bot, that only responds to the given options."
     }
 }

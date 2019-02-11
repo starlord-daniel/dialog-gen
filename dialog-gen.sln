@@ -7,7 +7,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "library", "library", "{CF16
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "samples", "samples", "{D4F9D590-2A1A-11E9-BB5F-A584AFD485DF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "dialog-gen-lib", "dialog-gen-lib\dialog-gen-lib.csproj", "{37C77378-D68C-4075-9324-E59647572DD5}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DialogGen.Lib", "DialogGen.Lib\DialogGen.Lib.csproj", "{37C77378-D68C-4075-9324-E59647572DD5}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "simple-prompt", "simple-prompt\simple-prompt.csproj", "{C621F5AA-C922-40AD-81AA-027584ACDA4C}"
 EndProject
