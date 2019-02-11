@@ -1,0 +1,25 @@
+{
+    "initMessage": {
+        "id": "initMessage",
+        "text": "Hello, I'll try to answer all your questions, based on my qna knowledge base. Just type your question."
+    },
+    "defaultMessage": {
+        "id": "defaultMessage",
+        "text": "Sorry, but I can't answer your question yet. Please ask me another question."
+    },
+    "actions": [
+        {
+            "trigger": "",
+            "triggerActions": [
+                {
+                    "type": "sendQnaMessage"
+                }
+            ]
+        }
+    ],
+    "qnaSettings": {
+        "endpointKey": "YOUR-ENDPOINT-KEY",
+        "host": "https://YOUR-RESOURCE-NAME.azurewebsites.net/qnamaker",
+        "route": "/knowledgebases/YOUR-KNOWLEDGE-BASE-ID/generateAnswer"
+    }
+}

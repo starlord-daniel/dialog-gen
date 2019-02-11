@@ -15,6 +15,21 @@ namespace DialogGen.Lib.Model
 
         [JsonProperty("defaultMessage")]
         public Message DefaultMessage { get; set; }
+
+        [JsonProperty("qnaSettings")]
+        public QnaSettings QnaSettings { get; set;}
+    }
+
+    public partial class QnaSettings
+    {
+        [JsonProperty("host")]
+        public string Host { get; set; }
+
+        [JsonProperty("route")]
+        public string Route { get; set; }
+
+        [JsonProperty("endpointKey")]
+        public string EndpointKey { get; set; }
     }
 
     public partial class Action

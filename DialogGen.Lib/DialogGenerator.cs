@@ -59,7 +59,15 @@ namespace DialogGen.Lib
 
             foreach (var trigger in triggerList)
             {
+                // Check for instant matches
                 if(trigger.Trigger.ToLower() == userInput.ToLower())
+                {
+                    await PerformActionListAsync(turnContext, cancellationToken, trigger.TriggerActions.ToList());
+                    return;
+                }
+
+                // check for special matches
+                if(trigger.Trigger.Trim() == "")
                 {
                     await PerformActionListAsync(turnContext, cancellationToken, trigger.TriggerActions.ToList());
                     return;
@@ -107,7 +115,11 @@ namespace DialogGen.Lib
                     {
                         var userInput = turnContext.Activity.Text;
 
-                        QnaResponse qnaResponse = await QnaMakerService.GetQnaResultAsync(userInput);
+                        QnaResponse qnaResponse = await QnaMakerService.GetQnaResultAsync(
+                            userInput,
+                            dialogModel.QnaSettings.Host,
+                            dialogModel.QnaSettings.Route,
+                            dialogModel.QnaSettings.EndpointKey);
 
                         await DialogMessageHandler.SendQnaMessageAsync(turnContext, cancellationToken, qnaResponse);
                     }
