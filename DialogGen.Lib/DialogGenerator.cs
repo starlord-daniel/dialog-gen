@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using DialogGen.Lib.Model;
+using DialogGen.Lib.Services;
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Schema;
 using Newtonsoft.Json;
@@ -58,7 +59,15 @@ namespace DialogGen.Lib
 
             foreach (var trigger in triggerList)
             {
+                // Check for instant matches
                 if(trigger.Trigger.ToLower() == userInput.ToLower())
+                {
+                    await PerformActionListAsync(turnContext, cancellationToken, trigger.TriggerActions.ToList());
+                    return;
+                }
+
+                // check for special matches
+                if(trigger.Trigger.Trim() == "")
                 {
                     await PerformActionListAsync(turnContext, cancellationToken, trigger.TriggerActions.ToList());
                     return;
@@ -104,7 +113,15 @@ namespace DialogGen.Lib
                 {
                     try
                     {
-                        // TODO
+                        var userInput = turnContext.Activity.Text;
+
+                        QnaResponse qnaResponse = await QnaMakerService.GetQnaResultAsync(
+                            userInput,
+                            dialogModel.QnaSettings.Host,
+                            dialogModel.QnaSettings.Route,
+                            dialogModel.QnaSettings.EndpointKey);
+
+                        await DialogMessageHandler.SendQnaMessageAsync(turnContext, cancellationToken, qnaResponse);
                     }
                     catch (System.Exception e)
                     {

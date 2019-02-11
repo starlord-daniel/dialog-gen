@@ -12,7 +12,7 @@ using System.Collections.Generic;
 using DialogGen.Lib;
 using System.IO;
 
-namespace simple_prompt
+namespace qna_sample
 {
     public class MyBot : IBot
     {
@@ -21,7 +21,7 @@ namespace simple_prompt
         public async Task OnTurnAsync(ITurnContext turnContext, CancellationToken cancellationToken = default(CancellationToken))
         {
             // load the JSON dialog
-            await InitDialogGenerator("generator/simpleDialog.json");
+            await InitDialogGenerator("generator/qnaDialog.json");
 
             // Handle the dialog that is build in JSON
             await dialogGenerator.HandleBotConversationsAsync(turnContext, cancellationToken);

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using DialogGen.Lib.Model;
@@ -11,6 +12,15 @@ public static class DialogMessageHandler
     public static async Task SendWelcomeMessageAsync(ITurnContext turnContext, CancellationToken cancellationToken, DialogModel dialogModel)
     {
         await SendMessageAsync(turnContext, cancellationToken, dialogModel.InitMessage);
+    }
+
+    public static async Task SendQnaMessageAsync(ITurnContext turnContext, CancellationToken cancellationToken, QnaResponse qnaResponse)
+    {
+        var qnaResponseText = qnaResponse.Answers.First().Text;
+
+        await SendMessageAsync(turnContext, cancellationToken, new Message {
+            Text = qnaResponseText
+        });
     }
 
     public static async Task SendMessageAsync(ITurnContext turnContext, CancellationToken cancellationToken, Message message)
