@@ -25,6 +25,13 @@ namespace DialogGen.Lib
             this.dialogModel = JsonConvert.DeserializeObject<DialogModel>(jsonDialogStructure);
         }
 
+        public Task LoadDialogsJsonAsync(string jsonDialogStructure)
+        {
+            this.dialogModel = JsonConvert.DeserializeObject<DialogModel>(jsonDialogStructure);
+            
+            return Task.CompletedTask;
+        }
+
         /// <summary>
         /// Handles the bot conversation based on the users previously loaded dialogStrcuture, in JSON format
         /// </summary>
@@ -39,13 +46,6 @@ namespace DialogGen.Lib
             {
                 await DialogMessageHandler.SendWelcomeMessageAsync(turnContext, cancellationToken, dialogModel);
             }
-        }
-
-        public Task LoadDialogsJsonAsync(string jsonDialogStructure)
-        {
-            this.dialogModel = JsonConvert.DeserializeObject<DialogModel>(jsonDialogStructure);
-            
-            return Task.CompletedTask;
         }
 
         private async Task HandleTriggersAsync(ITurnContext turnContext, CancellationToken cancellationToken)
@@ -67,7 +67,6 @@ namespace DialogGen.Lib
 
             // If there is no match, display the default message
             await DialogMessageHandler.SendMessageAsync(turnContext, cancellationToken, this.dialogModel.DefaultMessage);
-
         }
 
         private async Task PerformActionListAsync(ITurnContext turnContext, CancellationToken cancellationToken, 
@@ -75,7 +74,7 @@ namespace DialogGen.Lib
         {
             foreach (var action in actionList)
             {
-                if(action.Type == "sendMessage")
+                if(action.Type == Model.ActionTypes.SendMessage)
                 {
                     try
                     {
@@ -88,7 +87,7 @@ namespace DialogGen.Lib
                         throw new Exception("[DialogGenerator] Please check, if your messageIds match the actions.",e);
                     }
                 }
-                else if(action.Type == "sendInitMessage")
+                else if(action.Type == Model.ActionTypes.SendInitMessage)
                 {
                     try
                     {
@@ -101,9 +100,20 @@ namespace DialogGen.Lib
                         throw new Exception("[DialogGenerator] Please check the state of your initial message.",e);
                     }
                 }
+                else if(action.Type == Model.ActionTypes.SendQnaMessage)
+                {
+                    try
+                    {
+                        // TODO
+                    }
+                    catch (System.Exception e)
+                    {
+                        throw new Exception("[DialogGenerator] Qna Message failed to send properly.", e);
+                    }
+                }
                 else
                 {
-                    throw new NotImplementedException("You can't do anything else than sending a message yet.");
+                    throw new NotImplementedException("You can't do anything else than the provided ActionTypes yet.");
                 }
             }
         }
