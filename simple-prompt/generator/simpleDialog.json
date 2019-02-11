@@ -1,0 +1,50 @@
+{
+    "initMessage": {
+        "text": "Hello, I'm a simple prompt bot to showcase the dialog generator library ;-)",
+        "options": [
+            "Welcome",
+            "Bye"
+        ]
+    },
+    "actions": [
+        {
+            "trigger": "Welcome",
+            "triggerActions": [
+                {
+                    "type": "sendMessage",
+                    "messageId": "welcomeMessage1"
+                },
+                {
+                    "type": "sendMessage",
+                    "messageId": "initMessage"
+                }
+            ]
+        },
+        {
+            "trigger": "Bye",
+            "triggerActions": [
+                {
+                    "type": "sendMessage",
+                    "messageId": "byeMessage1"
+                },
+                {
+                    "type": "sendMessage",
+                    "messageId": "initMessage"
+                }
+            ]
+        }
+    ],
+    "messages": [
+        {
+            "id": "welcomeMessage1",
+            "text": "Hi, welcome to you, too!"
+        },
+        {
+            "id": "byeMessage1",
+            "text": "Goodbye! I hope to read from you soon."
+        }
+    ],
+    "defaultMessage": {
+        "text": "Sorry, but I'm just a humble bot, that only responds to the given options."
+    }
+}
