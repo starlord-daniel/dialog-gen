@@ -9,9 +9,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "samples", "samples", "{D4F9
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DialogGen.Lib", "DialogGen.Lib\DialogGen.Lib.csproj", "{37C77378-D68C-4075-9324-E59647572DD5}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "simple-prompt", "simple-prompt\simple-prompt.csproj", "{C621F5AA-C922-40AD-81AA-027584ACDA4C}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "simple-prompt", "Samples\simple-prompt\simple-prompt.csproj", "{C621F5AA-C922-40AD-81AA-027584ACDA4C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "qna-sample", "qna-sample\qna-sample.csproj", "{C7B7785B-23EA-43FF-A9BA-616E90B96C6F}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "qna-sample", "Samples\qna-sample\qna-sample.csproj", "{C7B7785B-23EA-43FF-A9BA-616E90B96C6F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
