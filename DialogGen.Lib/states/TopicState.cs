@@ -4,6 +4,6 @@ namespace DialogGen.Lib.States
 {
     public class TopicState
     {
-        public Dictionary<string, string> TopicStateStrings { get; set; }
+        public Dictionary<string, string> TopicStateStrings { get; set; } = new Dictionary<string, string>();
     }
 }

@@ -24,6 +24,10 @@ namespace DialogGen.Lib
     {
         DialogModel dialogModel = new DialogModel();
 
+        TopicState _topicState;
+
+        UserProfile _userProfile;
+
         public DialogGenerator() 
         {
 
@@ -38,6 +42,19 @@ namespace DialogGen.Lib
         
         public void InitializeDialogGenerator(IServiceCollection services, string fileLocation)
         {
+            services.AddSingleton<DialogGenerator>(sp =>
+            {
+                var dialogGenerator = new DialogGenerator();
+
+                using (StreamReader r = new StreamReader(fileLocation))
+                {
+                    string json = r.ReadToEnd();
+                    dialogGenerator.LoadDialogsJson(json);
+                }
+
+                return dialogGenerator;
+            });
+
             services.AddSingleton<DialogLibAccessors>(sp =>
             {
                 var options = sp.GetRequiredService<IOptions<BotFrameworkOptions>>().Value;
@@ -61,19 +78,6 @@ namespace DialogGen.Lib
 
                 return accessors;
             });
-
-            services.AddSingleton<DialogGenerator>(sp =>
-            {
-                var dialogGenerator = new DialogGenerator();
-
-                using (StreamReader r = new StreamReader(fileLocation))
-                {
-                    string json = r.ReadToEnd();
-                    dialogGenerator.LoadDialogsJson(json);
-                }
-
-                return dialogGenerator;
-            });
         }
 
         private void LoadDialogsJson(string jsonDialogStructure)
@@ -86,8 +90,17 @@ namespace DialogGen.Lib
         /// <summary>
         /// Handles the bot conversation based on the users previously loaded dialogStrcuture, in JSON format
         /// </summary>
-        public async Task HandleBotConversationsAsync(ITurnContext turnContext, CancellationToken cancellationToken)
+        public async Task HandleBotConversationsAsync(ITurnContext turnContext, CancellationToken cancellationToken, DialogLibAccessors accessors = null)
         {
+            if(accessors != null)
+            {
+                // Get the topic state from the turn context.
+                _topicState = await accessors?.TopicState?.GetAsync(turnContext, () => new TopicState());
+            
+                // Get the user profile (with feedback variables) from the turn context.
+                _userProfile = await accessors?.UserProfile?.GetAsync(turnContext, () => new UserProfile());
+            }
+
             if (turnContext.Activity.Type is ActivityTypes.Message)
             {   
                 await HandleTriggersAsync(turnContext, cancellationToken);
@@ -96,6 +109,15 @@ namespace DialogGen.Lib
                 && turnContext.Activity.MembersAdded.First().Name == "User")
             {
                 await DialogMessageHandler.SendWelcomeMessageAsync(turnContext, cancellationToken, dialogModel);
+            }
+
+            if(accessors != null)
+            {
+                await accessors.TopicState.SetAsync(turnContext, _topicState);
+                await accessors.ConversationState.SaveChangesAsync(turnContext);
+
+                await accessors.UserProfile.SetAsync(turnContext, _userProfile);
+                await accessors.UserState.SaveChangesAsync(turnContext);
             }
         }
 
@@ -109,18 +131,31 @@ namespace DialogGen.Lib
 
             foreach (var trigger in triggerList)
             {
-                // Check for instant matches
-                if(trigger.Trigger.ToLower() == userInput.ToLower())
+                if(trigger.TriggerState != null)
                 {
-                    await PerformActionListAsync(turnContext, cancellationToken, trigger.TriggerActions.ToList());
-                    return;
+                    // check for dialog state matches (trigger state is optional, so check for null)
+                    if(trigger.TriggerState != "default" && trigger.TriggerState == _topicState.TopicStateStrings["dialogState"])
+                    {
+                        await PerformActionListAsync(turnContext, cancellationToken, trigger.TriggerActions.ToList());
+                        return;
+                    }
                 }
 
-                // check for special matches
-                if(trigger.Trigger.Trim() == "")
+                if(trigger.Trigger != null)
                 {
-                    await PerformActionListAsync(turnContext, cancellationToken, trigger.TriggerActions.ToList());
-                    return;
+                    // Check for instant matches
+                    if(trigger.Trigger.ToLower() == userInput.ToLower())
+                    {
+                        await PerformActionListAsync(turnContext, cancellationToken, trigger.TriggerActions.ToList());
+                        return;
+                    }
+
+                    // check for special matches
+                    if(trigger.Trigger.Trim() == "")
+                    {
+                        await PerformActionListAsync(turnContext, cancellationToken, trigger.TriggerActions.ToList());
+                        return;
+                    }                
                 }
             }
 
@@ -138,6 +173,8 @@ namespace DialogGen.Lib
                     try
                     {
                         var message = this.dialogModel.Messages.Where(x => x.Id == action.MessageId).Select(x => x).First();
+                        message.Text = ReplacedUserInput(message.Text, turnContext.Activity.Text);
+                        
 
                         await DialogMessageHandler.SendMessageAsync(turnContext, cancellationToken, message);
                     }
@@ -178,11 +215,30 @@ namespace DialogGen.Lib
                         throw new Exception("[DialogGenerator] Qna Message failed to send properly.", e);
                     }
                 }
+                else if(action.Type == Model.ActionTypes.StoreState)
+                {
+                    try
+                    {
+                        var userInput = turnContext.Activity.Text;
+
+                        _topicState.TopicStateStrings["dialogState"] = action.Value;
+                    }
+                    catch (System.Exception e)
+                    {
+                        throw new Exception("[DialogGenerator] State could not be stored properly.", e);
+                    }
+                }
                 else
                 {
                     throw new NotImplementedException("You can't do anything else than the provided ActionTypes yet.");
                 }
             }
+        }
+
+        private string ReplacedUserInput(string textToUpdate, string userInput)
+        {
+            // Only replace input so far
+            return textToUpdate.Replace("{input}", userInput);
         }
         
     }

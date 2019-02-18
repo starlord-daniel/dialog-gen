@@ -14,7 +14,7 @@ using DialogGen.Lib.Accessors;
 using DialogGen.Lib.States;
 using System.IO;
 
-namespace simple_prompt
+namespace simple_dialog
 {
     public class MyBot : IBot
     {
@@ -34,7 +34,7 @@ namespace simple_prompt
         public async Task OnTurnAsync(ITurnContext turnContext, CancellationToken cancellationToken = default(CancellationToken))
         {
             // Handle the dialog that is build in JSON
-            await _dialogGenerator.HandleBotConversationsAsync(turnContext, cancellationToken);
+            await _dialogGenerator.HandleBotConversationsAsync(turnContext, cancellationToken, this._accessors);
         }
     }
 }

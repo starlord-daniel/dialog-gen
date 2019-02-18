@@ -1,0 +1,92 @@
+{
+    "initMessage": {
+        "id": "initMessage",
+        "text": "Hello, I'm a simple dialog bot. Start the conversation by choosing one of the options.",
+        "options": [
+            "Name",
+            "Age"
+        ]
+    },
+    "actions": [
+        {
+            "trigger": "Name",
+            "triggerActions": [
+                {
+                    "type": "sendMessage",
+                    "messageId": "nameMessage1"
+                },
+                {
+                    "type": "storeState",
+                    "value": "nameAsked"
+                }
+            ]
+        },
+        {
+            "trigger": "Age",
+            "triggerActions": [
+                {
+                    "type": "sendMessage",
+                    "messageId": "ageMessage1"
+                },
+                {
+                    "type": "storeState",
+                    "value": "ageAsked"
+                }
+            ]
+        },
+        {
+            "triggerState": "nameAsked",
+            "triggerActions": [
+                {
+                    "type": "sendMessage",
+                    "messageId": "nameFinalMessage1"
+                },
+                {
+                    "type": "storeState",
+                    "value": "default"
+                },
+                {
+                    "type": "sendInitMessage"
+                }
+            ]
+        },
+        {
+            "triggerState": "ageAsked",
+            "triggerActions": [
+                {
+                    "type": "sendMessage",
+                    "messageId": "ageFinalMessage1"
+                },
+                {
+                    "type": "storeState",
+                    "value": "default"
+                },
+                {
+                    "type": "sendInitMessage"
+                }
+            ]
+        }
+    ],
+    "messages": [
+        {
+            "id": "nameMessage1",
+            "text": "Hi, what's your name?"
+        },
+        {
+            "id": "ageMessage1",
+            "text": "Hi, how old are you?"
+        },
+        {
+            "id": "nameFinalMessage1",
+            "text": "Thank you, {input}."
+        },
+        {
+            "id": "ageFinalMessage1",
+            "text": "Thanks, I got that you are {input} years old."
+        }
+    ],
+    "defaultMessage": {
+        "id": "defaultMessage",
+        "text": "Sorry, but I'm just a humble bot, that only responds to the given options."
+    }
+}

@@ -31,10 +31,6 @@ namespace qna_sample
             _dialogGenerator = dialogGenerator ?? throw new System.ArgumentNullException(nameof(dialogGenerator));
         }
 
-        TopicState _currentTopic;
-
-        UserProfile _userProfile;
-
         #endregion
 
         public async Task OnTurnAsync(ITurnContext turnContext, CancellationToken cancellationToken = default(CancellationToken))
