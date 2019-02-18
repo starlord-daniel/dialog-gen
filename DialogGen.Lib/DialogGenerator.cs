@@ -4,10 +4,18 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using DialogGen.Lib.Accessors;
 using DialogGen.Lib.Model;
 using DialogGen.Lib.Services;
+using DialogGen.Lib.States;
 using Microsoft.Bot.Builder;
+using Microsoft.Bot.Builder.BotFramework;
+using Microsoft.Bot.Builder.Integration;
+using Microsoft.Bot.Builder.Integration.AspNet.Core;
 using Microsoft.Bot.Schema;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 
 namespace DialogGen.Lib
@@ -26,12 +34,54 @@ namespace DialogGen.Lib
             this.dialogModel = JsonConvert.DeserializeObject<DialogModel>(jsonDialogStructure);
         }
 
-        public Task LoadDialogsJsonAsync(string jsonDialogStructure)
+        #region Initialize Dialog Generator
+        
+        public void InitializeDialogGenerator(IServiceCollection services, string fileLocation)
+        {
+            services.AddSingleton<DialogLibAccessors>(sp =>
+            {
+                var options = sp.GetRequiredService<IOptions<BotFrameworkOptions>>().Value;
+                var userState = options.State.OfType<UserState>().FirstOrDefault();
+                if (userState == null)
+                {
+                    throw new InvalidOperationException("UserState must be defined and added before adding user-scoped state accessors.");
+                }
+
+                var conversationState = options.State.OfType<ConversationState>().FirstOrDefault();
+                if (conversationState == null)
+                {
+                    throw new InvalidOperationException("ConversationState must be defined and added before adding user-scoped state accessors.");
+                }
+
+                var accessors = new DialogLibAccessors(conversationState, userState)
+                {
+                    TopicState = conversationState.CreateProperty<TopicState>("TopicState"),
+                    UserProfile = userState.CreateProperty<UserProfile>("UserProfile"),
+                };
+
+                return accessors;
+            });
+
+            services.AddSingleton<DialogGenerator>(sp =>
+            {
+                var dialogGenerator = new DialogGenerator();
+
+                using (StreamReader r = new StreamReader(fileLocation))
+                {
+                    string json = r.ReadToEnd();
+                    dialogGenerator.LoadDialogsJson(json);
+                }
+
+                return dialogGenerator;
+            });
+        }
+
+        private void LoadDialogsJson(string jsonDialogStructure)
         {
             this.dialogModel = JsonConvert.DeserializeObject<DialogModel>(jsonDialogStructure);
-            
-            return Task.CompletedTask;
         }
+
+        #endregion
 
         /// <summary>
         /// Handles the bot conversation based on the users previously loaded dialogStrcuture, in JSON format

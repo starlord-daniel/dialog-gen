@@ -10,6 +10,10 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 
+// For use of DialogGen library
+using DialogGen.Lib;
+using System.IO;
+
 namespace qna_sample
 {
     public class Startup
@@ -30,12 +34,25 @@ namespace qna_sample
         // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddSingleton(configuration);
             services.AddBot<MyBot>(options =>
             {
                 // Create a storage to persist our values
                 IStorage dataStore = new MemoryStorage();
+
+                // Store ConverstationState (for current conversation) and UserState (for tracking user interaction)
+                var conversationState = new ConversationState(dataStore);
+                var userState = new UserState(dataStore);
+                
+                options.CredentialProvider = new ConfigurationCredentialProvider(configuration);               
+                
+                // Add the State to the bot
+                options.State.Add(conversationState);
+                options.State.Add(userState);
             });
+
+            DialogGenerator dialogGenerator = new DialogGenerator();
+
+            dialogGenerator.InitializeDialogGenerator(services, Path.GetFullPath("generator/qnaDialog.json"));
         }
 
         

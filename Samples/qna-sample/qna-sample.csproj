@@ -21,7 +21,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\DialogGen.Lib\DialogGen.Lib.csproj" />
+    <ProjectReference Include="..\..\DialogGen.Lib\DialogGen.Lib.csproj" />
   </ItemGroup>
 
 </Project>

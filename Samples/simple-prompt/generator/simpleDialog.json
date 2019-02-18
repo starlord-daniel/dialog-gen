@@ -33,6 +33,19 @@
                     "messageId": "initMessage"
                 }
             ]
+        },
+        {
+            "trigger": "Bye again!",
+            "triggerActions": [
+                {
+                    "type": "sendMessage",
+                    "messageId": "byeMessage2"
+                },
+                {
+                    "type": "sendInitMessage",
+                    "messageId": "initMessage"
+                }
+            ]
         }
     ],
     "messages": [
@@ -46,6 +59,10 @@
             "options": [
                 "Bye again!"
             ]
+        },
+        {
+            "id": "byeMessage2",
+            "text": "Goodbye again :-)."
         }
     ],
     "defaultMessage": {

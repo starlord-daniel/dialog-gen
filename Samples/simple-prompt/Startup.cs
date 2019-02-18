@@ -10,6 +10,9 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 
+using DialogGen.Lib;
+using System.IO;
+
 namespace simple_prompt
 {
     public class Startup
@@ -31,14 +34,27 @@ namespace simple_prompt
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddSingleton(configuration);
+            
             services.AddBot<MyBot>(options =>
             {
                 // Create a storage to persist our values
                 IStorage dataStore = new MemoryStorage();
-            });
-        }
 
-        
+                // Store ConverstationState (for current conversation) and UserState (for tracking user interaction)
+                var conversationState = new ConversationState(dataStore);
+                var userState = new UserState(dataStore);
+                
+                options.CredentialProvider = new ConfigurationCredentialProvider(configuration);               
+                
+                // Add the State to the bot
+                options.State.Add(conversationState);
+                options.State.Add(userState);
+            });
+
+            DialogGenerator dialogGenerator = new DialogGenerator();
+
+            dialogGenerator.InitializeDialogGenerator(services, Path.GetFullPath("generator/simpleDialog.json"));
+        }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
