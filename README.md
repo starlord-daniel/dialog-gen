@@ -7,9 +7,67 @@ To use the dialog generator library, clone the repo (or donwload the code). Make
 
 // If there is enough demand, this library will be published as a Nuget package for Dotnet Core.
 
+## Setup your bot
+
+To prepare for using the DialogGen library, you need to create a bot as showcased in the samples. The minimal configuration every bot need to have includes:
+
+1. **Startup.cs - Configure Services**
+
+    In the Startup.cs file of the project, make sure to include the code to setup the DialogGenerator. In the method called *"ConfigureServices"* you'll have to include this code after the services.AddSingleton(configuration) statement:
+
+    ```csharp
+    services.AddBot<MyBot>(options =>
+    {
+        // Create a storage to persist our values
+        IStorage dataStore = new MemoryStorage();
+
+        // Store ConverstationState (for current conversation) and UserState (for tracking user interaction)
+        var conversationState = new ConversationState(dataStore);
+        var userState = new UserState(dataStore);
+        
+        options.CredentialProvider = new ConfigurationCredentialProvider(configuration);               
+        
+        // Add the State to the bot
+        options.State.Add(conversationState);
+        options.State.Add(userState);
+    });
+
+    // Create the dialog generator instance
+    DialogGenerator dialogGenerator = new DialogGenerator();
+
+    // Set up the dialog generator with an absolute path to your file. 
+    dialogGenerator.InitializeDialogGenerator(services, Path.GetFullPath("folder/your-dialog-structure.json"));
+    ```
+
+    Please make sure to rename the "MyBot" reference in services.AddBot accordingly, when you change name the main bot class.
+
+2. Edit your main bot class
+
+    To make use of the dialog library, you have to include the following code. The example assumes, that your bot class is called **MyBot**
+
+    ```csharp
+    public class MyBot : IBot
+    {
+        private readonly DialogLibAccessors _accessors;
+        private readonly DialogGenerator _dialogGenerator;
+
+        public MyBot(DialogLibAccessors accessors, DialogGenerator dialogGenerator)
+        {
+            _accessors = accessors ?? throw new System.ArgumentNullException(nameof(accessors));
+            _dialogGenerator = dialogGenerator ?? throw new System.ArgumentNullException(nameof(dialogGenerator));
+        }
+
+        public async Task OnTurnAsync(ITurnContext turnContext, CancellationToken cancellationToken = default(CancellationToken))
+        {
+            // Handle the dialog that is build in JSON
+            await _dialogGenerator.HandleBotConversationsAsync(turnContext, cancellationToken);
+        }
+    }
+    ```
+
 ## Dialog Structure document
 
-The dialog structure consists of 2 main components: Messages and Actions. For more sophisticated dialogs, additional components will be introduced. The documentation shall be included in the specific sample. 
+The dialog structure consists of 2 main components: Messages and Actions. For more sophisticated dialogs, additional components will be introduced. The documentation shall be included in the specific sample.
 
 ### Messages
 

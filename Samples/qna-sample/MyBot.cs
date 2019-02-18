@@ -23,7 +23,7 @@ namespace qna_sample
         #region Bot Variable Setup
 
         private readonly DialogLibAccessors _accessors;
-        DialogGenerator _dialogGenerator;
+        private readonly DialogGenerator _dialogGenerator;
 
         public MyBot(DialogLibAccessors accessors, DialogGenerator dialogGenerator)
         {
