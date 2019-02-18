@@ -131,32 +131,29 @@ namespace DialogGen.Lib
 
             foreach (var trigger in triggerList)
             {
-                if(trigger.TriggerState != null)
+                
+                // check for dialog state matches (trigger state is optional, so check for null)
+                if(trigger?.TriggerState?.Equals("default") == false 
+                    && trigger?.TriggerState?.Equals(_topicState.TopicStateStrings["dialogState"]) == true)
                 {
-                    // check for dialog state matches (trigger state is optional, so check for null)
-                    if(trigger.TriggerState != "default" && trigger.TriggerState == _topicState.TopicStateStrings["dialogState"])
-                    {
-                        await PerformActionListAsync(turnContext, cancellationToken, trigger.TriggerActions.ToList());
-                        return;
-                    }
+                    await PerformActionListAsync(turnContext, cancellationToken, trigger.TriggerActions.ToList());
+                    return;
+                }
+                
+                // Check for instant matches
+                if(trigger?.Trigger?.ToLower() == userInput.ToLower())
+                {
+                    await PerformActionListAsync(turnContext, cancellationToken, trigger.TriggerActions.ToList());
+                    return;
                 }
 
-                if(trigger.Trigger != null)
+                // check for special matches
+                if(trigger?.Trigger?.Trim() == "")
                 {
-                    // Check for instant matches
-                    if(trigger.Trigger.ToLower() == userInput.ToLower())
-                    {
-                        await PerformActionListAsync(turnContext, cancellationToken, trigger.TriggerActions.ToList());
-                        return;
-                    }
-
-                    // check for special matches
-                    if(trigger.Trigger.Trim() == "")
-                    {
-                        await PerformActionListAsync(turnContext, cancellationToken, trigger.TriggerActions.ToList());
-                        return;
-                    }                
-                }
+                    await PerformActionListAsync(turnContext, cancellationToken, trigger.TriggerActions.ToList());
+                    return;
+                }                
+                
             }
 
             // If there is no match, display the default message
