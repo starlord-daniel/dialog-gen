@@ -41,7 +41,7 @@ To prepare for using the DialogGen library, you need to create a bot as showcase
 
     Please make sure to rename the "MyBot" reference in services.AddBot accordingly, when you change name the main bot class.
 
-2. Edit your main bot class
+2. **MyBot.cs - Add the library and accessors**
 
     To make use of the dialog library, you have to include the following code. The example assumes, that your bot class is called **MyBot**
 

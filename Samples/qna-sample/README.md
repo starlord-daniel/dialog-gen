@@ -1,6 +1,5 @@
 # Sample: Qna Maker Dialog
 
-
 To use Qna Maker with your dialog, add this to your dialog structure json file:
 
 ```json
