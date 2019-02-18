@@ -39,6 +39,9 @@ namespace DialogGen.Lib.Model
 
         [JsonProperty("triggerActions")]
         public TriggerAction[] TriggerActions { get; set; }
+
+        [JsonProperty("triggerState")]
+        public string TriggerState { get; set; }
     }
 
     public partial class TriggerAction
@@ -48,6 +51,9 @@ namespace DialogGen.Lib.Model
 
         [JsonProperty("messageId")]
         public string MessageId { get; set; }
+
+        [JsonProperty("value")]
+        public string Value { get; set; }
     }
 
     public partial class Message

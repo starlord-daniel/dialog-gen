@@ -20,5 +20,10 @@ namespace DialogGen.Lib.Model
         /// Send the QnaMaker response to the users input.
         /// </summary>
         public const string SendQnaMessage = "sendQnaMessage";
+
+        // <summary>
+        /// Stores the dialog state.
+        /// </summary>
+        public const string StoreState = "storeState";
     }
 }

@@ -13,7 +13,7 @@ using Microsoft.Extensions.Options;
 using DialogGen.Lib;
 using System.IO;
 
-namespace simple_prompt
+namespace simple_dialog
 {
     public class Startup
     {
