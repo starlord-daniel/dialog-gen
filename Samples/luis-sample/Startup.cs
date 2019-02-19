@@ -52,7 +52,7 @@ namespace luis_sample
 
             DialogGenerator dialogGenerator = new DialogGenerator();
 
-            dialogGenerator.InitializeDialogGenerator(services, Path.GetFullPath("generator/qnaDialog.json"));
+            dialogGenerator.InitializeDialogGenerator(services, Path.GetFullPath("generator/luisDialog.json"));
         }
 
         

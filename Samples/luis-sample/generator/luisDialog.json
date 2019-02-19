@@ -19,17 +19,17 @@
     ],
     "messages": [
         {
-            "id": "Intent.First.Intent",
-            "text": "Your response to hitting the first intent with {entityName}."
+            "id": "intent.first",
+            "text": "Answer to the first intent with entity {entityName1}."
         },
         {
-            "id": "Intent.Second.Intent",
-            "text": "Your response to hitting the second intent with {entityName}."
+            "id": "intent.second",
+            "text": "Answer to the second intent with entity {entityName2}."
         }
     ],
     "luisSettings": {
         "region": "yourregion",
-        "appId": "YOUR-LUIS-APP-ID",
+        "appId": "y0ur-lu1s-app-1d",
         "Ocp-Apim-Subscription-Key": "yoursubscriptionkey",
         "threshold": 0.4
     }
