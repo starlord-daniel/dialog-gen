@@ -26,9 +26,14 @@ namespace DialogGen.Lib.Model
         /// </summary>
         public const string SendLuisMessage = "sendLuisMessage";
 
-        // <summary>
+        /// <summary>
         /// Stores the dialog state.
         /// </summary>
         public const string StoreState = "storeState";
+
+        /// <summary>
+        /// Stores the dialog state.
+        /// </summary>
+        public const string SendAzureSearchMessage = "sendAzureSearchMessage";
     }
 }

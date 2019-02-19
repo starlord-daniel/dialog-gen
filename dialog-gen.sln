@@ -15,8 +15,11 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBD}") = "qna-sample", "Samples\qna-s
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBE}") = "simple-dialog", "Samples\simple-dialog\simple-dialog.csproj", "{C7B7785B-23EA-43FF-A9BA-616E90B96C7A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBF}") = "luis-sample", "Samples\luis-sample\luis-sample.csproj", "{C7B7785B-23EA-43FF-A9BA-616E90B96C7B}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFC0}") = "luis-sample", "Samples\luis-sample\luis-sample.csproj", "{C7B7785B-23EA-43FF-A9BA-616E90B96C7B}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFC1}") = "azure-search-sample", "Samples\azure-search-sample\azure-search-sample.csproj", "{C7B7785B-23EA-43FF-A9BA-616E90B96C7C}"
+EndProject
+
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -92,6 +95,19 @@ Global
 		{C7B7785B-23EA-43FF-A9BA-616E90B96C7B}.Release|x64.Build.0 = Release|Any CPU
 		{C7B7785B-23EA-43FF-A9BA-616E90B96C7B}.Release|x86.ActiveCfg = Release|Any CPU
 		{C7B7785B-23EA-43FF-A9BA-616E90B96C7B}.Release|x86.Build.0 = Release|Any CPU
+
+		{C7B7785B-23EA-43FF-A9BA-616E90B96C7C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C7B7785B-23EA-43FF-A9BA-616E90B96C7C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C7B7785B-23EA-43FF-A9BA-616E90B96C7C}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{C7B7785B-23EA-43FF-A9BA-616E90B96C7C}.Debug|x64.Build.0 = Debug|Any CPU
+		{C7B7785B-23EA-43FF-A9BA-616E90B96C7C}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{C7B7785B-23EA-43FF-A9BA-616E90B96C7C}.Debug|x86.Build.0 = Debug|Any CPU
+		{C7B7785B-23EA-43FF-A9BA-616E90B96C7C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C7B7785B-23EA-43FF-A9BA-616E90B96C7C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C7B7785B-23EA-43FF-A9BA-616E90B96C7C}.Release|x64.ActiveCfg = Release|Any CPU
+		{C7B7785B-23EA-43FF-A9BA-616E90B96C7C}.Release|x64.Build.0 = Release|Any CPU
+		{C7B7785B-23EA-43FF-A9BA-616E90B96C7C}.Release|x86.ActiveCfg = Release|Any CPU
+		{C7B7785B-23EA-43FF-A9BA-616E90B96C7C}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{C7B7785B-23EA-43FF-A9BA-616E90B96C6F} = {D4F9D590-2A1A-11E9-BB5F-A584AFD485DF}
@@ -99,5 +115,6 @@ Global
 		{37C77378-D68C-4075-9324-E59647572DD5} = {CF161D00-2A1A-11E9-BB5F-A584AFD485DF}
 		{C7B7785B-23EA-43FF-A9BA-616E90B96C7A} = {D4F9D590-2A1A-11E9-BB5F-A584AFD485DF}
 		{C7B7785B-23EA-43FF-A9BA-616E90B96C7B} = {D4F9D590-2A1A-11E9-BB5F-A584AFD485DF}
+		{C7B7785B-23EA-43FF-A9BA-616E90B96C7C} = {D4F9D590-2A1A-11E9-BB5F-A584AFD485DF}
 	EndGlobalSection
 EndGlobal

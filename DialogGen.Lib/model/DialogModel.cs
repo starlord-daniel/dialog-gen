@@ -1,3 +1,4 @@
+using System;
 using Newtonsoft.Json;
 
 namespace DialogGen.Lib.Model
@@ -21,6 +22,48 @@ namespace DialogGen.Lib.Model
 
         [JsonProperty("luisSettings")]
         public LuisSettings LuisSettings { get; set; }
+
+        [JsonProperty("azureSearchSettings")]
+        public AzureSearchSettings AzureSearchSettings { get; set; }
+    }
+
+    public partial class AzureSearchSettings
+    {
+        [JsonProperty("messageMapping")]
+        public MessageMapping MessageMapping { get; set; }
+
+        [JsonProperty("hostUrl")]
+        public Uri HostUrl { get; set; }
+
+        [JsonProperty("endpointKey")]
+        public string EndpointKey { get; set; }
+    }
+
+    public partial class MessageMapping
+    {
+        [JsonProperty("text")]
+        public string Text { get; set; }
+
+        [JsonProperty("card")]
+        public Card Card { get; set; }
+    }
+
+    public partial class Card
+    {
+        [JsonProperty("imageUrl")]
+        public string ImageUrl { get; set; }
+
+        [JsonProperty("title")]
+        public string Title { get; set; }
+
+        [JsonProperty("subtitle")]
+        public string Subtitle { get; set; }
+
+        [JsonProperty("options")]
+        public string[] Options { get; set; }
+
+        [JsonProperty("text")]
+        public string Text { get; set; }
     }
 
     public partial class QnaSettings
