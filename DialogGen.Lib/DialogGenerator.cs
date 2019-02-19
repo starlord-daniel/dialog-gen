@@ -28,6 +28,8 @@ namespace DialogGen.Lib
 
         UserProfile _userProfile;
 
+        #region Constructors
+
         public DialogGenerator() 
         {
 
@@ -37,6 +39,8 @@ namespace DialogGen.Lib
         {
             this.dialogModel = JsonConvert.DeserializeObject<DialogModel>(jsonDialogStructure);
         }
+
+        #endregion
 
         #region Initialize Dialog Generator
         
@@ -87,6 +91,7 @@ namespace DialogGen.Lib
 
         #endregion
 
+
         /// <summary>
         /// Handles the bot conversation based on the users previously loaded dialogStrcuture, in JSON format
         /// </summary>
@@ -131,7 +136,6 @@ namespace DialogGen.Lib
 
             foreach (var trigger in triggerList)
             {
-                
                 // check for dialog state matches (trigger state is optional, so check for null)
                 if(trigger?.TriggerState?.Equals("default") == false 
                     && trigger?.TriggerState?.Equals(_topicState.TopicStateStrings["dialogState"]) == true)
@@ -165,14 +169,15 @@ namespace DialogGen.Lib
         {
             foreach (var action in actionList)
             {
+                var userInput = turnContext.Activity.Text;
+
                 if(action.Type == Model.ActionTypes.SendMessage)
                 {
                     try
                     {
                         var message = this.dialogModel.Messages.Where(x => x.Id == action.MessageId).Select(x => x).First();
-                        message.Text = ReplacedUserInput(message.Text, turnContext.Activity.Text);
+                        message.Text = message.Text.Replace("{input}", userInput);
                         
-
                         await DialogMessageHandler.SendMessageAsync(turnContext, cancellationToken, message);
                     }
                     catch (System.Exception e) 
@@ -197,8 +202,6 @@ namespace DialogGen.Lib
                 {
                     try
                     {
-                        var userInput = turnContext.Activity.Text;
-
                         QnaResponse qnaResponse = await QnaMakerService.GetQnaResultAsync(
                             userInput,
                             dialogModel.QnaSettings.Host,
@@ -212,12 +215,33 @@ namespace DialogGen.Lib
                         throw new Exception("[DialogGenerator] Qna Message failed to send properly.", e);
                     }
                 }
+                else if(action.Type == Model.ActionTypes.SendLuisMessage)
+                {
+                    try
+                    {
+                        LuisResponse luisResponse = await LuisService.GetLuisResultAsync(
+                            userInput,
+                            dialogModel.LuisSettings.Region,
+                            dialogModel.LuisSettings.AppId,
+                            dialogModel.LuisSettings.SubscriptionKey,
+                            dialogModel.LuisSettings.Threshold
+                        );
+
+                        // Send the message specified in the dialog structure
+                        var message = this.dialogModel.Messages.Where(x => x.Id == luisResponse.TopScoringIntent.IntentIntent).First();
+                        message.Text = ReplaceWithLuisEntities(message.Text, luisResponse);
+
+                        await DialogMessageHandler.SendMessageAsync(turnContext, cancellationToken, message);
+                    }
+                    catch (System.Exception e)
+                    {
+                        throw new Exception("[DialogGenerator] LUIS Message failed to send properly.", e);
+                    }
+                }
                 else if(action.Type == Model.ActionTypes.StoreState)
                 {
                     try
                     {
-                        var userInput = turnContext.Activity.Text;
-
                         _topicState.TopicStateStrings["dialogState"] = action.Value;
                     }
                     catch (System.Exception e)
@@ -232,10 +256,30 @@ namespace DialogGen.Lib
             }
         }
 
-        private string ReplacedUserInput(string textToUpdate, string userInput)
+        private string ReplaceByPattern(string textToUpdate, string newText, string oldText = "{input}")
         {
             // Only replace input so far
-            return textToUpdate.Replace("{input}", userInput);
+            return textToUpdate.Replace(oldText, newText);
+        }
+
+        /// <summary>
+        /// Replaces all entity types that were found in the message construct by their values from the LuisResponse
+        /// </summary>
+        /// <param name="textToUpdate">The message text that should be updated. This needs to include the entity types in the format {entityType}.</param>
+        /// <param name="luisReponse">The LuisResponse that is used to replace the entity values from the message.</param>
+        private string ReplaceWithLuisEntities(string textToUpdate, LuisResponse luisResponse)
+        {
+            var newText = textToUpdate;
+
+            // TODO: What to do, when a entity is included in message, but not found in LuisResponse? 
+
+            foreach (var entity in luisResponse.Entities)
+            {
+                newText = newText.Replace("{" + entity.Type + "}", entity.EntityEntity);
+            }
+            
+            // Only replace input so far
+            return newText;
         }
         
     }

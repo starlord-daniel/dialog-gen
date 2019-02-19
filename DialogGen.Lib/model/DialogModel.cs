@@ -18,6 +18,9 @@ namespace DialogGen.Lib.Model
 
         [JsonProperty("qnaSettings")]
         public QnaSettings QnaSettings { get; set;}
+
+        [JsonProperty("luisSettings")]
+        public LuisSettings LuisSettings { get; set; }
     }
 
     public partial class QnaSettings
@@ -30,6 +33,21 @@ namespace DialogGen.Lib.Model
 
         [JsonProperty("endpointKey")]
         public string EndpointKey { get; set; }
+    }
+
+    public partial class LuisSettings
+    {
+        [JsonProperty("region")]
+        public string Region { get; set; }
+
+        [JsonProperty("appId")]
+        public string AppId { get; set; }
+
+        [JsonProperty("Ocp-Apim-Subscription-Key")]
+        public string SubscriptionKey { get; set; }
+
+        [JsonProperty("threshold")]
+        public float Threshold { get; set; }
     }
 
     public partial class Action

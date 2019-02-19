@@ -28,6 +28,7 @@
         }
     ],
     "luisSettings": {
+        "region": "yourregion",
         "appId": "YOUR-LUIS-APP-ID",
         "Ocp-Apim-Subscription-Key": "yoursubscriptionkey",
         "threshold": 0.4

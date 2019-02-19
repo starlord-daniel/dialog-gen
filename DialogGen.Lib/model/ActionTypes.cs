@@ -21,6 +21,11 @@ namespace DialogGen.Lib.Model
         /// </summary>
         public const string SendQnaMessage = "sendQnaMessage";
 
+        /// <summary>
+        /// Call LUIS to generate intents and entities based on the user input.
+        /// </summary>
+        public const string SendLuisMessage = "sendLuisMessage";
+
         // <summary>
         /// Stores the dialog state.
         /// </summary>
