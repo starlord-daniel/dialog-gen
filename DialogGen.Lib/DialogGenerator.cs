@@ -23,6 +23,8 @@ namespace DialogGen.Lib
     public class DialogGenerator
     {
         DialogModel dialogModel = new DialogModel();
+        
+        DialogMessageHandler dialogMessageHandler;
 
         TopicState _topicState;
 
@@ -33,11 +35,6 @@ namespace DialogGen.Lib
         public DialogGenerator() 
         {
 
-        }
-
-        public DialogGenerator(string jsonDialogStructure) 
-        {
-            this.dialogModel = JsonConvert.DeserializeObject<DialogModel>(jsonDialogStructure);
         }
 
         #endregion
@@ -87,6 +84,7 @@ namespace DialogGen.Lib
         private void LoadDialogsJson(string jsonDialogStructure)
         {
             this.dialogModel = JsonConvert.DeserializeObject<DialogModel>(jsonDialogStructure);
+            this.dialogMessageHandler = new DialogMessageHandler(this.dialogModel);
         }
 
         #endregion
@@ -113,7 +111,7 @@ namespace DialogGen.Lib
             else if (turnContext.Activity.Type == ActivityTypes.ConversationUpdate 
                 && turnContext.Activity.MembersAdded.First().Name == "User")
             {
-                await DialogMessageHandler.SendWelcomeMessageAsync(turnContext, cancellationToken, dialogModel);
+                await dialogMessageHandler.SendWelcomeMessageAsync(turnContext, cancellationToken);
             }
 
             if(accessors != null)
@@ -161,7 +159,7 @@ namespace DialogGen.Lib
             }
 
             // If there is no match, display the default message
-            await DialogMessageHandler.SendMessageAsync(turnContext, cancellationToken, this.dialogModel.DefaultMessage);
+            await dialogMessageHandler.SendMessageAsync(turnContext, cancellationToken, this.dialogModel.DefaultMessage);
         }
 
         private async Task PerformActionListAsync(ITurnContext turnContext, CancellationToken cancellationToken, 
@@ -178,7 +176,7 @@ namespace DialogGen.Lib
                         var message = this.dialogModel.Messages.Where(x => x.Id == action.MessageId).Select(x => x).First();
                         message.Text = message.Text.Replace("{input}", userInput);
                         
-                        await DialogMessageHandler.SendMessageAsync(turnContext, cancellationToken, message);
+                        await dialogMessageHandler.SendMessageAsync(turnContext, cancellationToken, message);
                     }
                     catch (System.Exception e) 
                     {
@@ -187,16 +185,7 @@ namespace DialogGen.Lib
                 }
                 else if(action.Type == Model.ActionTypes.SendInitMessage)
                 {
-                    try
-                    {
-                        var message = this.dialogModel.InitMessage;
-
-                        await DialogMessageHandler.SendMessageAsync(turnContext, cancellationToken, message);
-                    }
-                    catch (System.Exception e) 
-                    {
-                        throw new Exception("[DialogGenerator] Please check the state of your initial message.",e);
-                    }
+                    await dialogMessageHandler.SendInitialMessage(turnContext, cancellationToken);
                 }
                 else if(action.Type == Model.ActionTypes.SendQnaMessage)
                 {
@@ -208,7 +197,7 @@ namespace DialogGen.Lib
                             dialogModel.QnaSettings.Route,
                             dialogModel.QnaSettings.EndpointKey);
 
-                        await DialogMessageHandler.SendQnaMessageAsync(turnContext, cancellationToken, qnaResponse);
+                        await dialogMessageHandler.SendQnaMessageAsync(turnContext, cancellationToken, qnaResponse);
                     }
                     catch (System.Exception e)
                     {
@@ -223,15 +212,23 @@ namespace DialogGen.Lib
                             userInput,
                             dialogModel.LuisSettings.Region,
                             dialogModel.LuisSettings.AppId,
-                            dialogModel.LuisSettings.SubscriptionKey,
-                            dialogModel.LuisSettings.Threshold
+                            dialogModel.LuisSettings.SubscriptionKey
                         );
 
-                        // Send the message specified in the dialog structure
-                        var message = this.dialogModel.Messages.Where(x => x.Id == luisResponse.TopScoringIntent.IntentIntent).First();
-                        message.Text = ReplaceWithLuisEntities(message.Text, luisResponse);
+                        var topIntent = luisResponse.TopScoringIntent;
+                        if(topIntent.IntentIntent == "None" || topIntent.Score < dialogModel.LuisSettings.Threshold)
+                        {
+                            await dialogMessageHandler.SendDefaultMessage(turnContext, cancellationToken);
+                        }
+                        else
+                        {
+                            // Send the message specified in the dialog structure
+                            var message = this.dialogModel.Messages.Where(x => x.Id == topIntent.IntentIntent).First();
+                            message.Text = ReplaceWithLuisEntities(message.Text, luisResponse);
 
-                        await DialogMessageHandler.SendMessageAsync(turnContext, cancellationToken, message);
+                            await dialogMessageHandler.SendMessageAsync(turnContext, cancellationToken, message);
+                        }
+                        
                     }
                     catch (System.Exception e)
                     {
@@ -251,7 +248,7 @@ namespace DialogGen.Lib
                 }
                 else
                 {
-                    throw new NotImplementedException("You can't do anything else than the provided ActionTypes yet.");
+                    await dialogMessageHandler.SendDefaultMessage(turnContext, cancellationToken);
                 }
             }
         }
@@ -278,9 +275,9 @@ namespace DialogGen.Lib
                 newText = newText.Replace("{" + entity.Type + "}", entity.EntityEntity);
             }
             
-            // Only replace input so far
             return newText;
         }
+        
         
     }
 }

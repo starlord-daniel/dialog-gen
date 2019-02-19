@@ -12,7 +12,7 @@ namespace DialogGen.Lib.Services
     {
         private const string URL_BASE = "https://{region}.api.cognitive.microsoft.com/luis/v2.0/apps/"; 
 
-        public static async Task<LuisResponse> GetLuisResultAsync(string userInput, string region, string appId, string key, float threshold)
+        public static async Task<LuisResponse> GetLuisResultAsync(string userInput, string region, string appId, string key)
         {
             try
             {
@@ -36,8 +36,7 @@ namespace DialogGen.Lib.Services
                     var jsonResponse = await response.Content.ReadAsStringAsync();
                     var luisResponse = JsonConvert.DeserializeObject<LuisResponse>(jsonResponse);
 
-                    return luisResponse;
-                    
+                    return luisResponse;   
                 }
             }
             catch (System.Exception e)

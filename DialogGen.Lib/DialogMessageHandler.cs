@@ -7,14 +7,21 @@ using DialogGen.Lib.Model;
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Schema;
 
-public static class DialogMessageHandler
+public class DialogMessageHandler
 {
-    public static async Task SendWelcomeMessageAsync(ITurnContext turnContext, CancellationToken cancellationToken, DialogModel dialogModel)
+    DialogModel _dialogModel;
+
+    public DialogMessageHandler(DialogModel dialogModel)
     {
-        await SendMessageAsync(turnContext, cancellationToken, dialogModel.InitMessage);
+        this._dialogModel = dialogModel;
     }
 
-    public static async Task SendQnaMessageAsync(ITurnContext turnContext, CancellationToken cancellationToken, QnaResponse qnaResponse)
+    public async Task SendWelcomeMessageAsync(ITurnContext turnContext, CancellationToken cancellationToken)
+    {
+        await SendMessageAsync(turnContext, cancellationToken, _dialogModel.InitMessage);
+    }
+
+    public async Task SendQnaMessageAsync(ITurnContext turnContext, CancellationToken cancellationToken, QnaResponse qnaResponse)
     {
         var qnaResponseText = qnaResponse.Answers.First().Text;
 
@@ -23,7 +30,7 @@ public static class DialogMessageHandler
         });
     }
 
-    public static async Task SendMessageAsync(ITurnContext turnContext, CancellationToken cancellationToken, Message message)
+    public async Task SendMessageAsync(ITurnContext turnContext, CancellationToken cancellationToken, Message message)
     {
         try
         {
@@ -55,7 +62,7 @@ public static class DialogMessageHandler
         }
     }
 
-    private static List<CardAction> PopulateButtonList(string[] optionCollection)
+    private List<CardAction> PopulateButtonList(string[] optionCollection)
     {
         var optionActions = new List<CardAction>();
 
@@ -65,5 +72,31 @@ public static class DialogMessageHandler
         }
 
         return optionActions;
+    }
+
+    public async Task SendInitialMessage(ITurnContext turnContext, CancellationToken cancellationToken)
+    {
+        try
+        {
+            var message = _dialogModel.InitMessage;
+            await SendMessageAsync(turnContext, cancellationToken, message);
+        }
+        catch (System.Exception e) 
+        {
+            throw new Exception("[DialogMessageHandler] Please check the state of your initial message.",e);
+        }
+    }
+
+    public async Task SendDefaultMessage(ITurnContext turnContext, CancellationToken cancellationToken)
+    {
+        try
+        {
+            var message = _dialogModel.DefaultMessage;
+            await SendMessageAsync(turnContext, cancellationToken, message);
+        }
+        catch (System.Exception e) 
+        {
+            throw new Exception("[DialogMessageHandler] Please check the state of your default message.",e);
+        }   
     }
 }
