@@ -1,0 +1,35 @@
+{
+    "initMessage": {
+        "id": "initMessage",
+        "text": "Hello, try to ask me some questions about xyz. You can ask something like: zyx"
+    },
+    "defaultMessage": {
+        "id": "defaultMessage",
+        "text": "Sorry, but I can't answer your question yet. Please ask me another question."
+    },
+    "actions": [
+        {
+            "trigger": "",
+            "triggerActions": [
+                {
+                    "type": "sendLuisMessage"
+                }
+            ]
+        }
+    ],
+    "messages": [
+        {
+            "id": "Intent.First.Intent",
+            "text": "Your response to hitting the first intent with {entityName}."
+        },
+        {
+            "id": "Intent.Second.Intent",
+            "text": "Your response to hitting the second intent with {entityName}."
+        }
+    ],
+    "luisSettings": {
+        "appId": "YOUR-LUIS-APP-ID",
+        "Ocp-Apim-Subscription-Key": "yoursubscriptionkey",
+        "threshold": 0.4
+    }
+}
