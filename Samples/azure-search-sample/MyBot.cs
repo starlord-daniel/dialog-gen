@@ -36,7 +36,7 @@ namespace azure_search_sample
         public async Task OnTurnAsync(ITurnContext turnContext, CancellationToken cancellationToken = default(CancellationToken))
         {
             // Handle the dialog that is build in JSON
-            await _dialogGenerator.HandleBotConversationsAsync(turnContext, cancellationToken);
+            await _dialogGenerator.HandleBotConversationsAsync(turnContext, cancellationToken, _accessors);
         }
     }
 }

@@ -43,7 +43,8 @@
             "trigger": "FAQ",
             "triggerActions": [
                 {
-                    "type": "sendMessage"
+                    "type": "sendMessage",
+                    "messageId": "faqMessageInit"
                 },
                 {
                     "type": "storeState",

@@ -35,25 +35,7 @@ public class DialogMessageHandler
     {
         try
         {
-            var reply = turnContext.Activity.CreateReply();
-
-            if(message.Options == null || message.Options.Length == 0)
-            {
-                reply.Text = message.Text;
-            }
-            else 
-            {
-                var replyButtons = PopulateButtonList(message.Options);
-
-                // Create a HeroCard with options for the user to choose to interact with the bot.
-                var card = new HeroCard
-                {
-                    Text = message.Text,
-                    Buttons = replyButtons
-                };
-
-                reply.Attachments = new List<Attachment>() { card.ToAttachment() };
-            }
+            var reply = CreateMessageFromDialogStructureMessage(turnContext,message);
 
             await turnContext.SendActivityAsync(reply);
         }
@@ -97,6 +79,31 @@ public class DialogMessageHandler
         await turnContext.SendActivityAsync(replyActivity);
     }
 
+    private Activity CreateMessageFromDialogStructureMessage(ITurnContext turnContext, Message message)
+    {
+        var reply = turnContext.Activity.CreateReply();
+
+        if(message.Options == null || message.Options.Length == 0)
+        {
+            reply.Text = message.Text;
+        }
+        else 
+        {
+            var replyButtons = PopulateButtonList(message.Options);
+
+            // Create a HeroCard with options for the user to choose to interact with the bot.
+            var card = new HeroCard
+            {
+                Text = message.Text,
+                Buttons = replyButtons
+            };
+
+            reply.Attachments = new List<Attachment>() { card.ToAttachment() };
+        }
+
+        return reply;
+    }
+
     private Activity CreateReplyFromAzureSearchMapping(ITurnContext turnContext, MessageMapping messageMapping, string azureSearchResultJson)
     {
         try
@@ -108,6 +115,14 @@ public class DialogMessageHandler
             JArray searchResultArray = (JArray)azureSearchResult.SelectToken("value");
 
             var reply = turnContext.Activity.CreateReply();
+
+            // Send default message, if there are no results
+            if(searchResultArray.Count() == 0)
+            {
+                reply = CreateMessageFromDialogStructureMessage(turnContext, _dialogModel.DefaultMessage);
+                return reply;
+            }
+
             reply.Attachments = new List<Attachment>();
             reply.AttachmentLayout = AttachmentLayoutTypes.Carousel;
             reply.Text = messageMapping.Text;
@@ -122,7 +137,7 @@ public class DialogMessageHandler
                 var imageUrlPlaceholder = messageMapping.Card.ImageUrl;
                 
                 // If the value exists, replace it with the value from the AzureSearchResult
-                if(String.IsNullOrEmpty(imageUrlPlaceholder))
+                if(!String.IsNullOrEmpty(imageUrlPlaceholder))
                 {
                     // Replace all occurences of searchResult properties with their respective values
                     var imageUrl = MapSearchResultsToString(imageUrlPlaceholder, searchResult);
@@ -186,7 +201,7 @@ public class DialogMessageHandler
             var key = property.Name;
             var value = property.Value.ToString();
 
-            filledString.Replace("{" + key + "}", value);
+            filledString = filledString.Replace("{" + key + "}", value);
         }
 
         return filledString;
