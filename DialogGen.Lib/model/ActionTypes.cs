@@ -32,8 +32,18 @@ namespace DialogGen.Lib.Model
         public const string StoreState = "storeState";
 
         /// <summary>
-        /// Stores the dialog state.
+        /// Stores a custom value.
+        /// </summary>
+        public const string StoreCustomValue = "storeCustomValue";
+
+        /// <summary>
+        /// Sends a message result of a search in Azure Search
         /// </summary>
         public const string SendAzureSearchMessage = "sendAzureSearchMessage";
+
+        /// <summary>
+        /// Sends a message result of a filter query in Azure Search
+        /// </summary>
+        public const string SendAzureSearchFilterMessage = "sendAzureSearchFilterMessage";
     }
 }

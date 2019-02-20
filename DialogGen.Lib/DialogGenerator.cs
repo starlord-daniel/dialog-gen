@@ -136,7 +136,8 @@ namespace DialogGen.Lib
             {
                 // check for dialog state matches (trigger state is optional, so check for null)
                 if(trigger?.TriggerState?.Equals("default") == false 
-                    && trigger?.TriggerState?.Equals(_topicState.TopicStateStrings["dialogState"]) == true)
+                    && _topicState.TopicStateStrings.ContainsKey("dialogState") == true
+                    && trigger?.TriggerState?.Equals(_topicState?.TopicStateStrings["dialogState"]) == true)
                 {
                     await PerformActionListAsync(turnContext, cancellationToken, trigger.TriggerActions.ToList());
                     return;
@@ -257,11 +258,49 @@ namespace DialogGen.Lib
                         throw new Exception("[DialogGenerator] Azure Search message failed to process.", e);
                     }
                 }
+                else if(action.Type == Model.ActionTypes.SendAzureSearchFilterMessage)
+                {
+                    try
+                    {
+                        // Perform an Azure Search filter and return results as string
+                        string azureSearchResultJson = await AzureSearchService.GetAzureSearchFilterAnswersAsync(
+                            action.Value,
+                            action.Parameters, 
+                            _topicState.TopicStateStrings,
+                            dialogModel.AzureSearchSettings.HostUrl.ToString(),
+                            dialogModel.AzureSearchSettings.EndpointKey
+                            );
+
+                        // Send the results of the AzureSearchQuery
+                        await dialogMessageHandler.SendAzureSearchResultAsync(
+                            turnContext, 
+                            cancellationToken, 
+                            dialogModel.AzureSearchSettings.MessageMapping, 
+                            azureSearchResultJson
+                            );
+                    }
+                    catch (System.Exception e)
+                    {
+                        throw new Exception("[DialogGenerator] Azure Search message failed to process.", e);
+                    }
+                }
                 else if(action.Type == Model.ActionTypes.StoreState)
                 {
                     try
                     {
                         _topicState.TopicStateStrings["dialogState"] = action.Value;
+                    }
+                    catch (System.Exception e)
+                    {
+                        throw new Exception("[DialogGenerator] State could not be stored properly.", e);
+                    }
+                }
+                else if(action.Type == Model.ActionTypes.StoreCustomValue)
+                {
+                    try
+                    {
+                        // store the userInput in a state variable that is specified in the triggerAction of the dialog structure  
+                        _topicState.TopicStateStrings[action.Value] = userInput;
                     }
                     catch (System.Exception e)
                     {
@@ -299,7 +338,5 @@ namespace DialogGen.Lib
             
             return newText;
         }
-        
-        
     }
 }
