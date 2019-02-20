@@ -86,7 +86,7 @@ namespace DialogGen.Lib.Model
         [JsonProperty("appId")]
         public string AppId { get; set; }
 
-        [JsonProperty("Ocp-Apim-Subscription-Key")]
+        [JsonProperty("subscriptionKey")]
         public string SubscriptionKey { get; set; }
 
         [JsonProperty("threshold")]
