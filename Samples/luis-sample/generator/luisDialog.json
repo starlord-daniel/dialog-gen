@@ -30,7 +30,7 @@
     "luisSettings": {
         "region": "yourregion",
         "appId": "y0ur-lu1s-app-1d",
-        "Ocp-Apim-Subscription-Key": "yoursubscriptionkey",
+        "subscriptionKey": "yoursubscriptionkey",
         "threshold": 0.4
     }
 }

@@ -1,0 +1,100 @@
+{
+    "initMessage": {
+        "id": "initMessage",
+        "text": "Hello, I can help you to search for <include topic here>",
+        "options": [
+            "Search","FAQ"
+        ]
+    },
+    "defaultMessage": {
+        "id": "defaultMessage",
+        "text": "I'm so sorry, I'm not worthy. Please try another question."
+    },
+    "actions": [
+        {
+            "trigger": "Search",
+            "triggerActions": [
+                {
+                    "type": "sendMessage",
+                    "messageId": "searchMessageInit"
+                },
+                {
+                    "type": "storeState",
+                    "value": "searchInit"
+                }
+            ]
+        },
+        {
+            "triggerState": "searchInit",
+            "triggerActions": [
+                {
+                    "type": "sendAzureSearchMessage"
+                },
+                {
+                    "type": "storeState",
+                    "value": "default"
+                },
+                {
+                    "type": "sendInitMessage"
+                }
+            ]
+        },
+        {
+            "trigger": "FAQ",
+            "triggerActions": [
+                {
+                    "type": "sendMessage",
+                    "messageId": "faqMessageInit"
+                },
+                {
+                    "type": "storeState",
+                    "value": "faqInit"
+                }
+            ]
+        },
+        {
+            "triggerState": "faqInit",
+            "triggerActions": [
+                {
+                    "type": "sendQnaMessage"
+                },
+                {
+                    "type": "storeState",
+                    "value": "default"
+                },
+                {
+                    "type": "sendInitMessage"
+                }
+            ]
+        }
+    ],
+    "messages": [
+        {
+            "id": "searchMessageInit",
+            "text": "Search it is. What thing would you like to search for?"
+        },
+        {
+            "id": "faqMessageInit",
+            "text": "Ok, let's see if I can answer your questions. What do you want to know?"
+        }
+    ],
+    "azureSearchSettings": {
+        "messageMapping":{
+            "text": "This is your result",
+            "card": {
+                "imageUrl": "{imageUrl}",
+                "title": "Result for {searchResult}",
+                "subtitle": "Your {searchResult} was found in {searchLocation}",
+                "options": [],
+                "text": ""
+            }
+        },
+        "hostUrl": "https://<yoursearchname>.search.windows.net/indexes/<yourindex>/docs?api-version=2017-11-11",
+        "endpointKey": "YOURENDP01NTK3Y5DG8S75G89F5SDGSD"
+    },
+    "qnaSettings": {
+        "endpointKey": "YOUR-ENDPOINT-KEY",
+        "host": "https://YOUR-RESOURCE-NAME.azurewebsites.net/qnamaker",
+        "route": "/knowledgebases/YOUR-KNOWLEDGE-BASE-ID/generateAnswer"
+    }
+}

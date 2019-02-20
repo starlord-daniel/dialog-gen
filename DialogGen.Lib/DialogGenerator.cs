@@ -235,6 +235,28 @@ namespace DialogGen.Lib
                         throw new Exception("[DialogGenerator] LUIS Message failed to send properly.", e);
                     }
                 }
+                else if(action.Type == Model.ActionTypes.SendAzureSearchMessage)
+                {
+                    try
+                    {
+                        string azureSearchResultJson = await AzureSearchService.GetAzureSearchAnswersAsync(
+                            userInput, 
+                            dialogModel.AzureSearchSettings.HostUrl.ToString(),
+                            dialogModel.AzureSearchSettings.EndpointKey
+                            );
+
+                        await dialogMessageHandler.SendAzureSearchResultAsync(
+                            turnContext, 
+                            cancellationToken, 
+                            dialogModel.AzureSearchSettings.MessageMapping, 
+                            azureSearchResultJson
+                            );
+                    }
+                    catch (System.Exception e)
+                    {
+                        throw new Exception("[DialogGenerator] Azure Search message failed to process.", e);
+                    }
+                }
                 else if(action.Type == Model.ActionTypes.StoreState)
                 {
                     try
