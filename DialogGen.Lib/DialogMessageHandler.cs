@@ -117,7 +117,7 @@ public class DialogMessageHandler
             var reply = turnContext.Activity.CreateReply();
 
             // Send default message, if there are no results
-            if(searchResultArray.Count() == 0)
+            if(searchResultArray?.Count == 0)
             {
                 reply = CreateMessageFromDialogStructureMessage(turnContext, _dialogModel.DefaultMessage);
                 return reply;
@@ -151,14 +151,18 @@ public class DialogMessageHandler
                 // Create Button List
                 var buttonList = new List<CardAction>();
                 
-                foreach (var button in messageMapping.Card.Options)
+                if(messageMapping.Card.Options != null)
                 {
-                    buttonList.Add(new CardAction(
-                        Microsoft.Bot.Schema.ActionTypes.ImBack, 
-                        title: button, 
-                        value: button
-                    ));
+                    foreach (var button in messageMapping.Card.Options)
+                    {
+                        buttonList.Add(new CardAction(
+                            Microsoft.Bot.Schema.ActionTypes.ImBack, 
+                            title: button, 
+                            value: button
+                        ));
+                    }
                 }
+                
 
                 var card = new HeroCard
                 {

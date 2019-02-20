@@ -115,6 +115,9 @@ namespace DialogGen.Lib.Model
 
         [JsonProperty("value")]
         public string Value { get; set; }
+
+        [JsonProperty("parameters")]
+        public string[] Parameters { get; set; }
     }
 
     public partial class Message
