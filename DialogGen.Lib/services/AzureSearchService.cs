@@ -7,6 +7,7 @@ using System.Web;
 using System.Linq;
 using Newtonsoft.Json;
 using System.Text.RegularExpressions;
+using Microsoft.Bot.Schema;
 
 namespace DialogGen.Lib.Services
 {
@@ -44,6 +45,17 @@ namespace DialogGen.Lib.Services
                 throw new Exception("[AzureSearchService] Error while sending the AzureSearchFilterRequest",e);
             }
             
+        }
+
+        public static async Task<string> GetAzureSearchFacets(string facet, Uri hostUrl, string endpointKey)
+        {
+            var facetQuery = hostUrl + "&facet=";
+            
+            var uri = facetQuery + HttpUtility.UrlEncode(facet);
+
+            var rawFacetResult = await CallAzureSearchAsync(uri, endpointKey);
+
+            return rawFacetResult;
         }
 
         private static async Task<string> CallAzureSearchAsync(string uri, string endpointKey)

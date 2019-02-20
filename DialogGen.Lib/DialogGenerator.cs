@@ -338,7 +338,5 @@ namespace DialogGen.Lib
             
             return newText;
         }
-        
-        
     }
 }

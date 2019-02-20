@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using DialogGen.Lib.Model;
+using DialogGen.Lib.Services;
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Schema;
 using Newtonsoft.Json.Linq;
@@ -35,7 +36,7 @@ public class DialogMessageHandler
     {
         try
         {
-            var reply = CreateMessageFromDialogStructureMessage(turnContext,message);
+            var reply = await CreateMessageFromDialogStructureMessageAsync(turnContext,message);
 
             await turnContext.SendActivityAsync(reply);
         }
@@ -74,37 +75,46 @@ public class DialogMessageHandler
     public async Task SendAzureSearchResultAsync(ITurnContext turnContext, CancellationToken cancellationToken, 
         MessageMapping messageMapping, string azureSearchResultJson)
     {
-        Activity replyActivity = CreateReplyFromAzureSearchMapping(turnContext, messageMapping, azureSearchResultJson);
+        Activity replyActivity = await CreateReplyFromAzureSearchMappingAsync(turnContext, messageMapping, azureSearchResultJson);
 
         await turnContext.SendActivityAsync(replyActivity);
     }
 
-    private Activity CreateMessageFromDialogStructureMessage(ITurnContext turnContext, Message message)
+    private async Task<Activity> CreateMessageFromDialogStructureMessageAsync(ITurnContext turnContext, Message message)
     {
         var reply = turnContext.Activity.CreateReply();
+        List<CardAction> replyButtons = new List<CardAction>();
 
         if(message.Options == null || message.Options.Length == 0)
         {
-            reply.Text = message.Text;
-        }
-        else 
-        {
-            var replyButtons = PopulateButtonList(message.Options);
-
-            // Create a HeroCard with options for the user to choose to interact with the bot.
-            var card = new HeroCard
+            if(message.OptionsSettings == null)
             {
-                Text = message.Text,
-                Buttons = replyButtons
-            };
-
-            reply.Attachments = new List<Attachment>() { card.ToAttachment() };
+                reply.Text = message.Text;
+                return reply;
+            }
+            else
+            {
+                replyButtons = await PopulateButtonListFromOptionSettingsAsync(message.OptionsSettings);
+            }
         }
+        else
+        {
+            replyButtons = PopulateButtonList(message.Options);
+        }
+
+        // Create a HeroCard with options for the user to choose to interact with the bot.
+        var card = new HeroCard
+        {
+            Text = message.Text,
+            Buttons = replyButtons
+        };
+
+        reply.Attachments = new List<Attachment>() { card.ToAttachment() };
 
         return reply;
     }
 
-    private Activity CreateReplyFromAzureSearchMapping(ITurnContext turnContext, MessageMapping messageMapping, string azureSearchResultJson)
+    private async Task<Activity> CreateReplyFromAzureSearchMappingAsync(ITurnContext turnContext, MessageMapping messageMapping, string azureSearchResultJson)
     {
         try
         {
@@ -119,7 +129,7 @@ public class DialogMessageHandler
             // Send default message, if there are no results
             if(searchResultArray?.Count == 0)
             {
-                reply = CreateMessageFromDialogStructureMessage(turnContext, _dialogModel.DefaultMessage);
+                reply = await CreateMessageFromDialogStructureMessageAsync(turnContext, _dialogModel.DefaultMessage);
                 return reply;
             }
 
@@ -184,6 +194,54 @@ public class DialogMessageHandler
             throw new Exception("[DialogMessageHandler] Error while mapping AzureSearchResult to Message format.", e);
         }
     }
+
+    private async Task<List<CardAction>> PopulateButtonListFromOptionSettingsAsync(OptionSetting optionSetting)
+    {
+        try
+        {
+            if(optionSetting.Type == MessageOptionTypes.AzureSearchFacetsOptions)
+            {
+                var buttonList = new List<CardAction>();
+
+                // perform the facet call to Azure Search with settings value
+                string rawAzureFacetResult = await AzureSearchService.GetAzureSearchFacets(optionSetting.Value, 
+                    _dialogModel.AzureSearchSettings.HostUrl, _dialogModel.AzureSearchSettings.EndpointKey);
+
+                // Parse Json into AzureSearchFacet structure 
+                JObject azureFacetResult = JObject.Parse(rawAzureFacetResult);
+
+                // Get a list of the facets. They each include a count and a value property
+                JArray parsedfacetArray = (JArray)azureFacetResult["@search.facets"][optionSetting.Value];
+
+                foreach (JObject facetObject in parsedfacetArray.Children<JObject>())
+                {
+                    var facetName = ExtractJObjectValue(facetObject, "value");
+                    buttonList.Add(
+                        new CardAction(
+                            Microsoft.Bot.Schema.ActionTypes.ImBack, 
+                            title: facetName, 
+                            value: facetName
+                        )
+                    );
+                }
+
+                return buttonList;
+            }
+            else
+            {
+                throw new Exception("[DialogMessageHandler] Invalid type value of optionSettings parameter in dialog structure.");
+            }
+        }
+        catch (System.Exception)
+        {
+            
+            throw;
+        }
+        
+        
+    }
+
+
     private List<CardAction> PopulateButtonList(string[] optionCollection)
     {
         var optionActions = new List<CardAction>();
@@ -209,5 +267,18 @@ public class DialogMessageHandler
         }
 
         return filledString;
+    }
+
+    private string ExtractJObjectValue(JObject jsonObject, string propertyName)
+    {
+        foreach (var property in jsonObject.Properties())
+        {
+            if(property.Name == propertyName)
+            {
+                return property.Value.ToString();
+            }
+        }
+
+        return "";
     }
 }

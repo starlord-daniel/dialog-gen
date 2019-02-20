@@ -130,5 +130,17 @@ namespace DialogGen.Lib.Model
 
         [JsonProperty("options")]
         public string[] Options { get; set; }
+
+        [JsonProperty("optionSettings")]
+        public OptionSetting OptionsSettings { get; set; }
+    }
+
+    public partial class OptionSetting
+    {
+        [JsonProperty("type")]
+        public string Type { get; set; }
+
+        [JsonProperty("value")]
+        public string Value { get; set; }
     }
 }
