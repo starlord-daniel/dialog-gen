@@ -5,7 +5,7 @@ A library to generate dialogs based on a given structure file (JSON)
 
 To use the dialog generator library, clone the repo (or donwload the code). Make sure to add a reference to the DialogGen.Lib in your own bot project. You can take a look at the samples to get an idea for the usage.
 
-// If there is enough demand, this library will be published as a Nuget package for Dotnet Core.
+[Nuget package URL](https://www.nuget.org/packages/DialogGen.Lib/)
 
 ## Setup your bot
 
